@@ -11,10 +11,8 @@ jobs:
       packages: write
 
     steps:
-      - name: Make all yolks packages public
+      - name: Make all yolks packages public via gh CLI
         run: |
-          TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          
           PACKAGES=(
             yolks_python_3.14 yolks_python_3.13 yolks_python_3.12 yolks_python_3.11 yolks_python_3.10
             yolks_nodejs_24 yolks_nodejs_22 yolks_nodejs_20
@@ -29,30 +27,10 @@ jobs:
             yolks_hermes_agent
           )
           
-          # Try org endpoint first, then user endpoint
-          for endpoint in "orgs/grandpaacademy" "orgs/GrandpaAcademy" "user"; do
-            echo "Trying endpoint: ${endpoint}"
-            TEST=$(curl -s -o /dev/null -w "%{http_code}" \
-              -X GET \
-              "https://api.github.com/${endpoint}/packages/container/yolks_python_3.12" \
-              -H "Authorization: Bearer ${TOKEN}" \
-              -H "Accept: application/vnd.github+json")
-            echo "  Status: ${TEST}"
-            if [ "${TEST}" = "200" ]; then
-              echo "  Found! Using endpoint: ${endpoint}"
-              break
-            fi
-          done
-          
           for pkg in "${PACKAGES[@]}"; do
             echo -n "Making ${pkg} public... "
-            RESP=$(curl -s -w "\n%{http_code}" \
-              -X PATCH \
-              "https://api.github.com/${endpoint}/packages/container/${pkg}" \
-              -H "Authorization: Bearer ${TOKEN}" \
-              -H "Accept: application/vnd.github+json" \
-              -d '{"visibility":"public"}')
-            HTTP_CODE=$(echo "$RESP" | tail -1)
-            BODY=$(echo "$RESP" | head -1)
-            echo "${HTTP_CODE} $(echo ${BODY} | python3 -c 'import sys,json; d=json.load(sys.stdin); print(d.get("visibility", d.get("message","?")))' 2>/dev/null || echo "${BODY}")"
+            # gh api to update package visibility
+            RESP=$(gh api -X PATCH \
+              "user/packages/container/${pkg}" \
+              -f visibility=public 2>&1) && echo "OK" || echo "FAIL: ${RESP}"
           done
