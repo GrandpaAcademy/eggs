@@ -12,7 +12,7 @@
     "tags": ["language", "zig"],
     "features": [],
     "docker_images": {
-        "Zig 0.15": "ghcr.io/grandpaacademy/yolks_zig_0.15:latest"
+        "Zig 0.14": "ghcr.io/grandpaacademy/yolks_zig_0.14:latest"
     },
     "file_denylist": [],
     "startup": "if [[ -d .git ]] && [[ \"{{AUTO_UPDATE}}\" == \"1\" ]]; then git pull; fi; if [ -f /home/container/build.zig ]; then zig build; else zig run /home/container/{{MAIN_FILE}} ${ZIG_ARGS}; fi; if [ -f /home/container/zig-out/bin/main ]; then exec /home/container/zig-out/bin/main ${ZIG_ARGS}; fi",

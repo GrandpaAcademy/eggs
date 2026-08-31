@@ -155,8 +155,8 @@ jobs:
             tag: nim_2
           - image: crystal/1
             tag: crystal_1
-          - image: zig/0.15
-            tag: zig_0.15
+          - image: zig/0.14
+            tag: zig_0.14
           - image: hermes-agent/latest
             tag: hermes_agent
     permissions:

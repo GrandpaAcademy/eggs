@@ -86,7 +86,7 @@ else
     build_image "elixir/1.20" "elixir_1.20"
     build_image "nim/2" "nim_2"
     build_image "crystal/1" "crystal_1"
-    build_image "zig/0.15" "zig_0.15"
+    build_image "zig/0.14" "zig_0.14"
     
     echo ""
     echo "All images built successfully!"

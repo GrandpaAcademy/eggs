@@ -9,7 +9,7 @@ RUN apt-get update && \
         curl ca-certificates git jq unzip && \
     rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -u 998 -s /bin/bash container
+RUN useradd -m -u 1000 -s /bin/bash container
 
 USER container
 WORKDIR /home/container
