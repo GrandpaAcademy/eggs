@@ -9,7 +9,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/yolks
 
 jobs:
   detect-changes:
@@ -22,7 +21,6 @@ jobs:
         name: Detect changed Dockerfiles
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # Build all images on manual trigger
             IMAGES=$(find docker -name Dockerfile -exec dirname {} \; | sed 's|^docker/||' | sort | jq -R -s -c 'split("\n") | map(select(. != ""))')
           else
             IMAGES=$(git diff --name-only HEAD~1 HEAD -- docker/ 2>/dev/null | grep Dockerfile | sed 's|docker/||;s|/Dockerfile||' | sort -u | jq -R -s -c 'split("\n") | map(select(. != ""))')
@@ -58,7 +56,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_PREFIX }}_${{ matrix.image }}
+          images: ${{ env.REGISTRY }}/grandpaacademy/yolks_${{ matrix.image }}
           tags: |
             type=raw,value=latest
             type=sha,prefix=
@@ -105,8 +103,6 @@ jobs:
             tag: golang_1.22
           - image: rust/latest
             tag: rust_latest
-          - image: java/24
-            tag: java_24
           - image: java/21
             tag: java_21
           - image: java/17
@@ -149,6 +145,6 @@ jobs:
         with:
           context: docker/${{ matrix.image }}
           push: true
-          tags: ${{ env.IMAGE_PREFIX }}_${{ matrix.tag }}:latest
+          tags: ${{ env.REGISTRY }}/grandpaacademy/yolks_${{ matrix.tag }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

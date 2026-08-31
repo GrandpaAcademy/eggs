@@ -34,7 +34,6 @@ if [ ! -z "$1" ]; then
         golang1.23) build_image "golang/1.23" "golang_1.23" ;;
         golang1.22) build_image "golang/1.22" "golang_1.22" ;;
         rust)       build_image "rust/latest" "rust_latest" ;;
-        java24)     build_image "java/24" "java_24" ;;
         java21)     build_image "java/21" "java_21" ;;
         java17)     build_image "java/17" "java_17" ;;
         caddy)      build_image "caddy/latest" "caddy_latest" ;;
@@ -64,7 +63,6 @@ else
     build_image "golang/1.23" "golang_1.23"
     build_image "golang/1.22" "golang_1.22"
     build_image "rust/latest" "rust_latest"
-    build_image "java/24" "java_24"
     build_image "java/21" "java_21"
     build_image "java/17" "java_17"
     build_image "caddy/latest" "caddy_latest"

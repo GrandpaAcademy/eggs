@@ -12,7 +12,6 @@
     "tags": ["language", "java", "jdk"],
     "features": [],
     "docker_images": {
-        "Java 24": "ghcr.io/grandpaacademy/yolks_java_24:latest",
         "Java 21": "ghcr.io/grandpaacademy/yolks_java_21:latest",
         "Java 17": "ghcr.io/grandpaacademy/yolks_java_17:latest"
     },
