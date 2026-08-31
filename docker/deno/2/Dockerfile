@@ -1,4 +1,4 @@
-FROM denoland/deno:2
+FROM denoland/deno:2.9.6
 
 LABEL maintainer="grandpaacademy"
 LABEL org.opencontainers.image.source="https://github.com/GrandpaAcademy/eggs"

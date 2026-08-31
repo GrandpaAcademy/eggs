@@ -1,4 +1,4 @@
-FROM elixir:1.20-erlang-28-bookworm
+FROM elixir:1.20-otp-28
 
 LABEL maintainer="grandpaacademy"
 LABEL org.opencontainers.image.source="https://github.com/GrandpaAcademy/eggs"
