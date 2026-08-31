@@ -12,7 +12,7 @@
     "tags": ["software", "database", "valkey", "cache", "redis-fork"],
     "features": [],
     "docker_images": {
-        "Valkey (latest)": "ghcr.io/grandpaacademy/yolks:valkey_latest"
+        "Valkey (latest)": "ghcr.io/grandpaacademy/yolks_valkey_latest:latest"
     },
     "file_denylist": [],
     "startup": "if [ ! -f /home/container/valkey.conf ]; then echo \"port ${SERVER_PORT:-6379}\" > /home/container/valkey.conf; echo \"bind 0.0.0.0\" >> /home/container/valkey.conf; echo \"daemonize no\" >> /home/container/valkey.conf; if [ ! -z \"${VALKEY_PASSWORD}\" ]; then echo \"requirepass ${VALKEY_PASSWORD}\" >> /home/container/valkey.conf; fi; fi; exec valkey-server /home/container/valkey.conf",

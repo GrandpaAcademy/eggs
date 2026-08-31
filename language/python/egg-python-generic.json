@@ -12,11 +12,11 @@
     "tags": ["language", "python"],
     "features": [],
     "docker_images": {
-        "Python 3.14": "ghcr.io/grandpaacademy/yolks:python_3.14",
-        "Python 3.13": "ghcr.io/grandpaacademy/yolks:python_3.13",
-        "Python 3.12": "ghcr.io/grandpaacademy/yolks:python_3.12",
-        "Python 3.11": "ghcr.io/grandpaacademy/yolks:python_3.11",
-        "Python 3.10": "ghcr.io/grandpaacademy/yolks:python_3.10"
+        "Python 3.14": "ghcr.io/grandpaacademy/yolks_python_3.14:latest",
+        "Python 3.13": "ghcr.io/grandpaacademy/yolks_python_3.13:latest",
+        "Python 3.12": "ghcr.io/grandpaacademy/yolks_python_3.12:latest",
+        "Python 3.11": "ghcr.io/grandpaacademy/yolks_python_3.11:latest",
+        "Python 3.10": "ghcr.io/grandpaacademy/yolks_python_3.10:latest"
     },
     "file_denylist": [],
     "startup": "if [[ -d .git ]] && [[ \"{{AUTO_UPDATE}}\" == \"1\" ]]; then git pull; fi; if [[ ! -z \"{{PY_PACKAGES}}\" ]]; then pip install -U --prefix .local {{PY_PACKAGES}}; fi; if [[ -f /home/container/${REQUIREMENTS_FILE} ]]; then pip install -U --prefix .local -r ${REQUIREMENTS_FILE}; fi; /usr/local/bin/python /home/container/{{PY_FILE}}",

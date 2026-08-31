@@ -1,0 +1,154 @@
+name: Build & Push Docker Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docker/**'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/yolks
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.changes.outputs.images }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: changes
+        name: Detect changed Dockerfiles
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Build all images on manual trigger
+            IMAGES=$(find docker -name Dockerfile -exec dirname {} \; | sed 's|^docker/||' | sort | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          else
+            IMAGES=$(git diff --name-only HEAD~1 HEAD -- docker/ 2>/dev/null | grep Dockerfile | sed 's|docker/||;s|/Dockerfile||' | sort -u | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          fi
+          echo "images=$IMAGES" >> "$GITHUB_OUTPUT"
+          echo "Building images: $IMAGES"
+
+  build:
+    needs: detect-changes
+    if: fromJSON(needs.detect-changes.outputs.images)[0] != null
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ${{ fromJSON(needs.detect-changes.outputs.images) }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}_${{ matrix.image }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: docker/${{ matrix.image }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Rebuild all on manual dispatch
+  build-all:
+    if: github.event_name == 'workflow_dispatch'
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - image: python/3.14
+            tag: python_3.14
+          - image: python/3.13
+            tag: python_3.13
+          - image: python/3.12
+            tag: python_3.12
+          - image: python/3.11
+            tag: python_3.11
+          - image: python/3.10
+            tag: python_3.10
+          - image: nodejs/24
+            tag: nodejs_24
+          - image: nodejs/22
+            tag: nodejs_22
+          - image: nodejs/20
+            tag: nodejs_20
+          - image: golang/1.24
+            tag: golang_1.24
+          - image: golang/1.23
+            tag: golang_1.23
+          - image: golang/1.22
+            tag: golang_1.22
+          - image: rust/latest
+            tag: rust_latest
+          - image: java/24
+            tag: java_24
+          - image: java/21
+            tag: java_21
+          - image: java/17
+            tag: java_17
+          - image: caddy/latest
+            tag: caddy_latest
+          - image: postgres/17
+            tag: postgres_17
+          - image: postgres/16
+            tag: postgres_16
+          - image: postgres/15
+            tag: postgres_15
+          - image: redis/latest
+            tag: redis_latest
+          - image: valkey/latest
+            tag: valkey_latest
+          - image: nginx/latest
+            tag: nginx_latest
+          - image: hermes-agent/latest
+            tag: hermes_agent
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: docker/${{ matrix.image }}
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}_${{ matrix.tag }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

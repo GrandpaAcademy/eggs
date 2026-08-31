@@ -1,49 +1,105 @@
 # Grandpa Academy Eggs
 
-Pterodactyl / Pelican compatible eggs for self-hosted services.
+Pterodactyl / Pelican compatible eggs with custom Docker images.
 
-## Eggs
+## Quick Start
+
+### Import an Egg
+1. Download the `egg-*.json` file from the category you need
+2. In Pterodactyl: **Admin** → **Nests** → **Create New Egg** → **Import Egg**
+3. Upload the JSON
+4. Configure variables
+
+### Docker Images
+
+All images are at `ghcr.io/grandpaacademy/yolks_*` — built automatically via GitHub Actions.
+
+| Category | Images |
+|----------|--------|
+| **AI** | `yolks_hermes_agent` |
+| **Python** | `yolks_python_3.14`, `_3.13`, `_3.12`, `_3.11`, `_3.10` |
+| **Node.js** | `yolks_nodejs_24`, `_22`, `_20` |
+| **Golang** | `yolks_golang_1.24`, `_1.23`, `_1.22` |
+| **Rust** | `yolks_rust_latest` |
+| **Java** | `yolks_java_24`, `_21`, `_17` |
+| **Software** | `yolks_caddy_latest`, `_postgres_17/16/15`, `_redis_latest`, `_valkey_latest`, `_nginx_latest` |
+
+### Build Locally
+
+```bash
+# Build all images
+./build.sh
+
+# Build specific image
+./build.sh python3.14
+./build.sh nodejs22
+./build.sh hermes
+```
+
+## Egg Categories
 
 ### AI
-| Egg | Docker Image | Description |
-|-----|-------------|-------------|
-| [Hermes Agent](ai/hermes-agent/) | `ghcr.io/grandpaacademy/yolks:hermes_agent` | Self-hosted AI agent with OpenAI-compatible API |
+| Egg | Description |
+|-----|-------------|
+| [Hermes Agent](ai/hermes-agent/) | Self-hosted AI agent with OpenAI-compatible API |
 
 ### Languages
-| Egg | Docker Images | Description |
-|-----|--------------|-------------|
-| [Python](language/python/) | `python_3.14` - `python_3.10` | Generic Python app runner |
-| [Node.js](language/nodejs/) | `nodejs_24` - `nodejs_20` | Generic Node.js/TypeScript runner |
-| [Golang](language/golang/) | `golang_1.24` - `golang_1.22` | Go build & run |
-| [Rust](language/rust/) | `rust_latest` | Cargo build & run |
-| [Java](language/java/) | `java_24` - `java_17` | Maven/Gradle JAR runner |
+| Egg | Description |
+|-----|-------------|
+| [Python](language/python/) | Generic Python app runner |
+| [Node.js](language/nodejs/) | Generic Node.js/TypeScript runner |
+| [Golang](language/golang/) | Go build & run |
+| [Rust](language/rust/) | Cargo build & run |
+| [Java](language/java/) | Maven/Gradle JAR runner |
 
 ### Software
-| Egg | Docker Image | Description |
-|-----|-------------|-------------|
-| [Caddy](software/caddy/) | `caddy_latest` | Web server with automatic HTTPS |
-| [PostgreSQL](software/postgres/) | `postgres_17` - `postgres_15` | Database server |
-| [Redis](software/redis/) | `redis_latest` | In-memory data store |
-| [Valkey](software/valkey/) | `valkey_latest` | Open source Redis fork |
-| [Nginx](software/nginx/) | `nginx_latest` | Web server / reverse proxy |
+| Egg | Description |
+|-----|-------------|
+| [Caddy](software/caddy/) | Web server with automatic HTTPS |
+| [PostgreSQL](software/postgres/) | Database server |
+| [Redis](software/redis/) | In-memory data store |
+| [Valkey](software/valkey/) | Open source Redis fork |
+| [Nginx](software/nginx/) | Web server / reverse proxy |
 
-## Usage
+## Structure
 
-1. Download the `egg-*.json` file for the egg you want
-2. In Pterodactyl Panel: **Admin** → **Nests** → **Create New Egg** → **Import Egg**
-3. Upload the JSON file
-4. Configure the egg variables as needed
+```
+eggs/
+├── ai/                    # AI agent eggs
+├── language/              # Language runtime eggs
+├── software/              # Software/service eggs
+├── docker/                # Dockerfiles for all images
+│   ├── python/
+│   ├── nodejs/
+│   ├── golang/
+│   ├── rust/
+│   ├── java/
+│   ├── caddy/
+│   ├── postgres/
+│   ├── redis/
+│   ├── valkey/
+│   ├── nginx/
+│   └── hermes-agent/
+├── .github/workflows/     # CI/CD for Docker builds
+├── build.sh               # Local build script
+└── README.md
+```
 
-## Docker Images
+## CI/CD
 
-All images are hosted at `ghcr.io/grandpaacademy/yolks`. These are custom images built for Grandpa Academy's Pterodactyl deployment.
+Docker images are built automatically via GitHub Actions when `docker/**` files change on `main`.
+
+To manually rebuild all images:
+```bash
+gh workflow run docker-publish.yml
+```
 
 ## Contributing
 
-1. Create your egg in the appropriate category directory
-2. Follow the naming convention: `egg-<name>.json`
-3. Include `install.sh` and `startup.sh` if needed
-4. Submit a PR
+1. Create egg in the appropriate category directory
+2. Add Dockerfile in `docker/<name>/`
+3. Follow naming: `egg-<name>.json`
+4. Submit PR — CI will build and push images
 
 ## License
 

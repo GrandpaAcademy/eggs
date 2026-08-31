@@ -12,7 +12,7 @@
     "tags": ["software", "webserver", "nginx", "reverse-proxy"],
     "features": [],
     "docker_images": {
-        "Nginx (latest)": "ghcr.io/grandpaacademy/yolks:nginx_latest"
+        "Nginx (latest)": "ghcr.io/grandpaacademy/yolks_nginx_latest:latest"
     },
     "file_denylist": [],
     "startup": "if [ ! -f /home/container/nginx.conf ]; then mkdir -p /home/container/www; echo '<!DOCTYPE html><html><body><h1>Nginx is running!</h1></body></html>' > /home/container/www/index.html; echo 'worker_processes auto; events { worker_connections 1024; } http { include /etc/nginx/mime.types; default_type application/octet-stream; sendfile on; server { listen ${SERVER_PORT:-80}; root /home/container/www; index index.html; location / { try_files $uri $uri/ =404; } } }' > /home/container/nginx.conf; fi; exec nginx -g 'daemon off;' -c /home/container/nginx.conf",

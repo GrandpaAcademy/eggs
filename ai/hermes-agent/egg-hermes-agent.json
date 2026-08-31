@@ -12,7 +12,7 @@
     "tags": ["ai", "agent", "hermes", "llm"],
     "features": [],
     "docker_images": {
-        "Hermes Agent (latest)": "ghcr.io/grandpaacademy/yolks:hermes_agent"
+        "Hermes Agent (latest)": "ghcr.io/grandpaacademy/yolks_hermes_agent:latest"
     },
     "file_denylist": [],
     "startup": "bash /home/container/startup.sh",

@@ -12,7 +12,7 @@
     "tags": ["software", "database", "redis", "cache"],
     "features": [],
     "docker_images": {
-        "Redis (latest)": "ghcr.io/grandpaacademy/yolks:redis_latest"
+        "Redis (latest)": "ghcr.io/grandpaacademy/yolks_redis_latest:latest"
     },
     "file_denylist": [],
     "startup": "if [ ! -f /home/container/redis.conf ]; then echo \"port ${SERVER_PORT:-6379}\" > /home/container/redis.conf; echo \"bind 0.0.0.0\" >> /home/container/redis.conf; echo \"daemonize no\" >> /home/container/redis.conf; if [ ! -z \"${REDIS_PASSWORD}\" ]; then echo \"requirepass ${REDIS_PASSWORD}\" >> /home/container/redis.conf; fi; fi; exec redis-server /home/container/redis.conf",

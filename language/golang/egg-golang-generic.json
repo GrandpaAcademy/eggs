@@ -12,9 +12,9 @@
     "tags": ["language", "golang", "go"],
     "features": [],
     "docker_images": {
-        "Golang 1.24": "ghcr.io/grandpaacademy/yolks:golang_1.24",
-        "Golang 1.23": "ghcr.io/grandpaacademy/yolks:golang_1.23",
-        "Golang 1.22": "ghcr.io/grandpaacademy/yolks:golang_1.22"
+        "Golang 1.24": "ghcr.io/grandpaacademy/yolks_golang_1.24:latest",
+        "Golang 1.23": "ghcr.io/grandpaacademy/yolks_golang_1.23:latest",
+        "Golang 1.22": "ghcr.io/grandpaacademy/yolks_golang_1.22:latest"
     },
     "file_denylist": [],
     "startup": "if [[ -d .git ]] && [[ {{AUTO_UPDATE}} == \"1\" ]]; then git pull; fi; if [[ ! -f /home/container/{{MAIN_FILE}} ]]; then echo \"Main file not found!\"; exit 1; fi; if [ -f go.mod ]; then /usr/local/go/bin/go mod tidy; fi; if [ \"${BUILD_ONLY}\" == \"1\" ]; then /usr/local/go/bin/go build -o /home/container/server ${GO_BUILD_ARGS} .; else /usr/local/go/bin/go run ${GO_RUN_ARGS} /home/container/{{MAIN_FILE}}; fi",

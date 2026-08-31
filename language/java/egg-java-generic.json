@@ -12,9 +12,9 @@
     "tags": ["language", "java", "jdk"],
     "features": [],
     "docker_images": {
-        "Java 24": "ghcr.io/grandpaacademy/yolks:java_24",
-        "Java 21": "ghcr.io/grandpaacademy/yolks:java_21",
-        "Java 17": "ghcr.io/grandpaacademy/yolks:java_17"
+        "Java 24": "ghcr.io/grandpaacademy/yolks_java_24:latest",
+        "Java 21": "ghcr.io/grandpaacademy/yolks_java_21:latest",
+        "Java 17": "ghcr.io/grandpaacademy/yolks_java_17:latest"
     },
     "file_denylist": [],
     "startup": "if [[ -d .git ]] && [[ {{AUTO_UPDATE}} == \"1\" ]]; then git pull; fi; if [[ ! -z ${MAVEN_SETTINGS} ]]; then export MAVEN_OPTS=\"-s ${MAVEN_SETTINGS}\"; fi; if [ -f /home/container/pom.xml ] && [ ! -f /home/container/target/*.jar ]; then mvn clean package -DskipTests; fi; if [ -f /home/container/build.gradle ] && [ ! -f /home/container/build/libs/*.jar ]; then ./gradlew shadowJar || ./gradlew build; fi; if [ ! -z \"${JAR_FILE}\" ]; then exec java ${JAVA_ARGS} -jar /home/container/${JAR_FILE}; else echo \"No JAR_FILE specified!\"; exit 1; fi",
