@@ -129,6 +129,34 @@ jobs:
             tag: valkey_latest
           - image: nginx/latest
             tag: nginx_latest
+          - image: bun/1
+            tag: bun_1
+          - image: php/8.5
+            tag: php_8.5
+          - image: php/8.4
+            tag: php_8.4
+          - image: ruby/4
+            tag: ruby_4
+          - image: ruby/3.4
+            tag: ruby_3.4
+          - image: dotnet/10
+            tag: dotnet_10
+          - image: dotnet/9
+            tag: dotnet_9
+          - image: swift/6.3
+            tag: swift_6.3
+          - image: swift/6.1
+            tag: swift_6.1
+          - image: deno/2
+            tag: deno_2
+          - image: elixir/1.20
+            tag: elixir_1.20
+          - image: nim/2
+            tag: nim_2
+          - image: crystal/1
+            tag: crystal_1
+          - image: zig/0.15
+            tag: zig_0.15
           - image: hermes-agent/latest
             tag: hermes_agent
     permissions:

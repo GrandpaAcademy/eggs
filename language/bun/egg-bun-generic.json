@@ -1,0 +1,124 @@
+{
+    "_comment": "Bun Egg - Grandpa Academy",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": "https://raw.githubusercontent.com/grandpaacademy/eggs/main/language/bun/egg-bun-generic.json"
+    },
+    "exported_at": "2026-08-31T00:00:00+00:00",
+    "name": "Bun Generic",
+    "author": "grandpaacademy",
+    "description": "A generic Bun egg for running JavaScript/TypeScript applications. Supports git clone, bun install, and custom startup commands.",
+    "image": "",
+    "tags": ["language", "bun"],
+    "features": [],
+    "docker_images": {
+        "Bun 1": "ghcr.io/grandpaacademy/yolks_bun_1:latest"
+    },
+    "file_denylist": [],
+    "startup": "if [[ -d .git ]] && [[ \"{{AUTO_UPDATE}}\" == \"1\" ]]; then git pull; fi; if [[ ! -z \"{{BUN_PACKAGES}}\" ]]; then bun add {{BUN_PACKAGES}}; fi; if [ -f /home/container/package.json ]; then bun install; fi; bun /home/container/{{MAIN_FILE}} ${BUN_ARGS}",
+    "config": {
+        "files": "{}",
+        "startup": "{\n    \"done\": [\n        \"change this text 1\",\n        \"change this text 2\"\n    ]\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# Bun App Installation Script\napt update\napt install -y git curl jq file unzip make gcc g++ libtool\nmkdir -p /mnt/server\ncd /mnt/server\n\nif [ \"${USER_UPLOAD}\" == \"true\" ] || [ \"${USER_UPLOAD}\" == \"1\" ]; then\n    echo -e \"assuming user knows what they are doing have a good day.\"\n    exit 0\nfi\n\nif [[ ${GIT_ADDRESS} != *.git ]]; then\n    GIT_ADDRESS=${GIT_ADDRESS}.git\nfi\n\nif [ -z \"${USERNAME}\" ] && [ -z \"${ACCESS_TOKEN}\" ]; then\n    echo -e \"using anon api call\"\nelse\n    GIT_ADDRESS=\"https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e ${GIT_ADDRESS} | cut -d/ -f3-)\"\nfi\n\nif [ \"$(ls -A /mnt/server)\" ]; then\n    echo -e \"/mnt/server directory is not empty.\"\n    if [ -d .git ]; then\n        echo -e \".git directory exists\"\n        if [ -f .git/config ]; then\n            echo -e \"loading info from git config\"\n            ORIGIN=$(git config --get remote.origin.url)\n        else\n            echo -e \"files found with no git config\"\n            echo -e \"closing out without touching things to not break anything\"\n            exit 10\n        fi\n    fi\n    if [ \"${ORIGIN}\" == \"${GIT_ADDRESS}\" ]; then\n        echo \"pulling latest from github\"\n        git pull\n    fi\nelse\n    echo -e \"/mnt/server is empty.\\ncloning files into repo\"\n    if [ -z ${BRANCH} ]; then\n        echo -e \"cloning default branch\"\n        git clone ${GIT_ADDRESS} .\n    else\n        echo -e \"cloning ${BRANCH}'\"\n        git clone --single-branch --branch ${BRANCH} ${GIT_ADDRESS} .\n    fi\nfi\n\nexport HOME=/mnt/server\n\necho \"Installing bun packages\"\nif [[ ! -z ${BUN_PACKAGES} ]]; then\n    bun add ${BUN_PACKAGES}\nfi\n\nif [ -f /mnt/server/package.json ]; then\n    bun install\nfi\n\necho -e \"install complete\"\nexit 0",
+            "container": "node:22-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Git Repo Address",
+            "description": "Git repo to clone. I.E. https://github.com/user/repo",
+            "env_variable": "GIT_ADDRESS",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 1
+        },
+        {
+            "name": "Git Branch",
+            "description": "What branch to pull from github. Default is blank to pull the repo default branch.",
+            "env_variable": "BRANCH",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 2
+        },
+        {
+            "name": "User Uploaded Files",
+            "description": "Skip all the install stuff if you are letting a user upload files. 0 = false (default) 1 = true",
+            "env_variable": "USER_UPLOAD",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "sort": 3
+        },
+        {
+            "name": "Auto Update",
+            "description": "Pull the latest files on startup when using a GitHub repo.",
+            "env_variable": "AUTO_UPDATE",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "sort": 4
+        },
+        {
+            "name": "Main file",
+            "description": "The file that starts the App.",
+            "env_variable": "MAIN_FILE",
+            "default_value": "index.ts",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "sort": 5
+        },
+        {
+            "name": "Additional Bun packages",
+            "description": "Install additional bun packages. Use spaces to separate.",
+            "env_variable": "BUN_PACKAGES",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 6
+        },
+        {
+            "name": "Bun Arguments",
+            "description": "Arguments to pass to bun at runtime.",
+            "env_variable": "BUN_ARGS",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 7
+        },
+        {
+            "name": "Git Username",
+            "description": "Username to auth with git.",
+            "env_variable": "USERNAME",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 8
+        },
+        {
+            "name": "Git Access Token",
+            "description": "Password to use with git. It's best practice to use a Personal Access Token.",
+            "env_variable": "ACCESS_TOKEN",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 9
+        }
+    ]
+}
