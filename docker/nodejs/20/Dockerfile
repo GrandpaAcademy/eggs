@@ -9,7 +9,7 @@ RUN apt-get update && \
         curl ca-certificates git jq unzip make gcc g++ python3 python3-dev python3-pip libtool && \
     rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g npm@latest tsx
+RUN npm install -g tsx
 
 RUN useradd -m -u 998 -s /bin/bash container
 

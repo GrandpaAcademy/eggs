@@ -15,11 +15,11 @@ RUN pip install --no-cache-dir hermes-agent
 # Create s6-overlay compatible structure
 RUN mkdir -p /etc/s6-overlay/s6-rc.d/ /etc/s6-overlay/scripts/
 
-# Create container user
-RUN useradd -m -u 998 -s /bin/bash container && \
+# Create container user (use 1000 to avoid conflicts with base image)
+RUN useradd -m -u 1000 -s /bin/bash container && \
     mkdir -p /home/container/{sessions,memories,skills,home,cron,hooks,logs,skins,config} && \
     mkdir -p /home/container/logs/gateways/default && \
-    chown -R 998:998 /home/container
+    chown -R 1000:1000 /home/container
 
 USER container
 WORKDIR /home/container

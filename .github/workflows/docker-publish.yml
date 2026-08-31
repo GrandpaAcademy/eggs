@@ -33,6 +33,7 @@ jobs:
     if: fromJSON(needs.detect-changes.outputs.images)[0] != null
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image: ${{ fromJSON(needs.detect-changes.outputs.images) }}
     permissions:
@@ -77,6 +78,7 @@ jobs:
     needs: detect-changes
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - image: python/3.14
