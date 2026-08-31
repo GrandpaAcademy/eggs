@@ -150,3 +150,43 @@ jobs:
           tags: ${{ env.REGISTRY }}/grandpaacademy/yolks_${{ matrix.tag }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # Make all packages public after build
+  publish:
+    needs: [build, build-all]
+    if: always() && !cancelled() && (needs.build.result == 'success' || needs.build-all.result == 'success' || needs.build.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Make all yolks packages public
+        run: |
+          TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          ORG="grandpaacademy"
+          
+          PACKAGES=(
+            yolks_python_3.14 yolks_python_3.13 yolks_python_3.12 yolks_python_3.11 yolks_python_3.10
+            yolks_nodejs_24 yolks_nodejs_22 yolks_nodejs_20
+            yolks_golang_1.24 yolks_golang_1.23 yolks_golang_1.22
+            yolks_rust_latest
+            yolks_java_21 yolks_java_17
+            yolks_caddy_latest
+            yolks_postgres_17 yolks_postgres_16 yolks_postgres_15
+            yolks_redis_latest
+            yolks_valkey_latest
+            yolks_nginx_latest
+            yolks_hermes_agent
+          )
+          
+          for pkg in "${PACKAGES[@]}"; do
+            echo -n "Making ${pkg} public... "
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X PATCH \
+              "https://api.github.com/orgs/${ORG}/packages/container/${pkg}" \
+              -H "Authorization: Bearer ${TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -d '{"visibility":"public"}')
+            echo "${STATUS}"
+          done
