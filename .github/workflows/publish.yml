@@ -3,9 +3,6 @@ name: Publish Packages as Public
 on:
   workflow_dispatch:
 
-env:
-  GH_TOKEN: ${{ github.token }}
-
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -16,7 +13,7 @@ jobs:
     steps:
       - name: Make all yolks packages public
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.CR_PAT }}
         run: |
           PACKAGES=(
             yolks_python_3.14 yolks_python_3.13 yolks_python_3.12 yolks_python_3.11 yolks_python_3.10
@@ -34,5 +31,12 @@ jobs:
           
           for pkg in "${PACKAGES[@]}"; do
             echo -n "Making ${pkg} public... "
-            gh api -X PATCH "user/packages/container/${pkg}" -f visibility=public 2>&1 && echo "OK" || echo "FAIL"
+            RESP=$(curl -s -w "\n%{http_code}" -X PATCH \
+              -H "Authorization: token ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/orgs/grandpaacademy/packages/container/${pkg}" \
+              -d '{"visibility":"public"}')
+            HTTP_CODE=$(echo "$RESP" | tail -1)
+            echo "${HTTP_CODE}"
           done
