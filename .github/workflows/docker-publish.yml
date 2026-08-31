@@ -30,7 +30,7 @@ jobs:
 
   build:
     needs: detect-changes
-    if: fromJSON(needs.detect-changes.outputs.images)[0] != null
+    if: github.event_name == 'push' && fromJSON(needs.detect-changes.outputs.images)[0] != null
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
