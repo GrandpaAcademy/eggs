@@ -91,12 +91,16 @@ jobs:
             tag: python_3.11
           - image: python/3.10
             tag: python_3.10
+          - image: nodejs/26
+            tag: nodejs_26
           - image: nodejs/24
             tag: nodejs_24
           - image: nodejs/22
             tag: nodejs_22
           - image: nodejs/20
             tag: nodejs_20
+          - image: golang/1.26
+            tag: golang_1.26
           - image: golang/1.24
             tag: golang_1.24
           - image: golang/1.23
@@ -111,6 +115,8 @@ jobs:
             tag: java_17
           - image: caddy/latest
             tag: caddy_latest
+          - image: postgres/18
+            tag: postgres_18
           - image: postgres/17
             tag: postgres_17
           - image: postgres/16

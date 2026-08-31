@@ -12,6 +12,7 @@
     "tags": ["language", "golang", "go"],
     "features": [],
     "docker_images": {
+        "Golang 1.26": "ghcr.io/grandpaacademy/yolks_golang_1.26:latest",
         "Golang 1.24": "ghcr.io/grandpaacademy/yolks_golang_1.24:latest",
         "Golang 1.23": "ghcr.io/grandpaacademy/yolks_golang_1.23:latest",
         "Golang 1.22": "ghcr.io/grandpaacademy/yolks_golang_1.22:latest"

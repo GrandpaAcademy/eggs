@@ -12,6 +12,7 @@
     "tags": ["software", "database", "postgres", "postgresql", "sql"],
     "features": [],
     "docker_images": {
+        "PostgreSQL 18": "ghcr.io/grandpaacademy/yolks_postgres_18:latest",
         "PostgreSQL 17": "ghcr.io/grandpaacademy/yolks_postgres_17:latest",
         "PostgreSQL 16": "ghcr.io/grandpaacademy/yolks_postgres_16:latest",
         "PostgreSQL 15": "ghcr.io/grandpaacademy/yolks_postgres_15:latest"

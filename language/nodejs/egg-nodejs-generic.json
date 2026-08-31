@@ -12,6 +12,7 @@
     "tags": ["language", "nodejs", "node", "javascript", "typescript"],
     "features": [],
     "docker_images": {
+        "Nodejs 26": "ghcr.io/grandpaacademy/yolks_nodejs_26:latest",
         "Nodejs 24": "ghcr.io/grandpaacademy/yolks_nodejs_24:latest",
         "Nodejs 22": "ghcr.io/grandpaacademy/yolks_nodejs_22:latest",
         "Nodejs 20": "ghcr.io/grandpaacademy/yolks_nodejs_20:latest"
