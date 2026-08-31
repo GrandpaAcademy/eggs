@@ -3,6 +3,9 @@ name: Publish Packages as Public
 on:
   workflow_dispatch:
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -11,7 +14,9 @@ jobs:
       packages: write
 
     steps:
-      - name: Make all yolks packages public via gh CLI
+      - name: Make all yolks packages public
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           PACKAGES=(
             yolks_python_3.14 yolks_python_3.13 yolks_python_3.12 yolks_python_3.11 yolks_python_3.10
@@ -29,8 +34,5 @@ jobs:
           
           for pkg in "${PACKAGES[@]}"; do
             echo -n "Making ${pkg} public... "
-            # gh api to update package visibility
-            RESP=$(gh api -X PATCH \
-              "user/packages/container/${pkg}" \
-              -f visibility=public 2>&1) && echo "OK" || echo "FAIL: ${RESP}"
+            gh api -X PATCH "user/packages/container/${pkg}" -f visibility=public 2>&1 && echo "OK" || echo "FAIL"
           done
