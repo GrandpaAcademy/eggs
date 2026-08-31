@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Hermes Agent",
+  "author": "grandpaacademy",
+  "description": "Self-hosted AI agent by Nous Research. Includes OpenAI-compatible gateway API (port 8642), web dashboard (port 9119), persistent memory, skills, and multi-profile support. Requires at least one LLM provider API key.",
+  "docker_images": {
+    "latest": "nousresearch/hermes-agent:latest"
+  },
+  "startup": "bash /home/container/startup.sh",
+  "config": {
+    "files": "{}",
+    "startup": "{}",
+    "logs": "{}",
+    "stop": ""
+  },
+  "scripts": {
+    "privileged": false,
+    "install": "#!/bin/bash\nset -e\ncurl -sL https://raw.githubusercontent.com/grandpaacademy/eggs/main/ai/hermes-agent/startup.sh -o /home/container/startup.sh 2>/dev/null || true\nchmod +x /home/container/startup.sh 2>/dev/null || true\nmkdir -p /home/container/{sessions,memories,skills,home,cron,hooks,logs,skins,config}\nmkdir -p /home/container/logs/gateways/default\necho \"[hermes] Install complete\"",
+    "entry": "",
+    "container": ""
+  },
+  "variables": [
+    {
+      "name": "OPENROUTER_API_KEY",
+      "description": "OpenRouter API key for LLM access.",
+      "env_variable": "OPENROUTER_API_KEY",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required_without:ANTHROPIC_API_KEY,OPENAI_API_KEY|string|nullable"
+    },
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "description": "Anthropic API key for Claude models.",
+      "env_variable": "ANTHROPIC_API_KEY",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required_without:OPENROUTER_API_KEY,OPENAI_API_KEY|string|nullable"
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "description": "OpenAI API key for GPT models.",
+      "env_variable": "OPENAI_API_KEY",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required_without:OPENROUTER_API_KEY,ANTHROPIC_API_KEY|string|nullable"
+    },
+    {
+      "name": "HERMES_DASHBOARD",
+      "description": "Enable web dashboard (1=enabled, 0=disabled).",
+      "env_variable": "HERMES_DASHBOARD",
+      "default_value": "1",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|in:0,1"
+    },
+    {
+      "name": "HERMES_DASHBOARD_USERNAME",
+      "description": "Dashboard login username",
+      "env_variable": "HERMES_DASHBOARD_USERNAME",
+      "default_value": "admin",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:3"
+    },
+    {
+      "name": "HERMES_DASHBOARD_PASSWORD",
+      "description": "Dashboard login password. Change this!",
+      "env_variable": "HERMES_DASHBOARD_PASSWORD",
+      "default_value": "changeme",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "required|string|min:6"
+    },
+    {
+      "name": "API_SERVER_ENABLED",
+      "description": "Enable OpenAI-compatible API server on port 8642",
+      "env_variable": "API_SERVER_ENABLED",
+      "default_value": "true",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|in:true,false"
+    },
+    {
+      "name": "API_SERVER_KEY",
+      "description": "API server authentication key.",
+      "env_variable": "API_SERVER_KEY",
+      "default_value": "",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "nullable|string|min:8"
+    }
+  ]
+}

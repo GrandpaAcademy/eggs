@@ -1,0 +1,54 @@
+{
+    "_comment": "Valkey Egg - Grandpa Academy",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": "https://raw.githubusercontent.com/grandpaacademy/eggs/main/software/valkey/egg-valkey.json"
+    },
+    "exported_at": "2026-08-31T00:00:00+00:00",
+    "name": "Valkey",
+    "author": "grandpaacademy",
+    "description": "Valkey - open source Redis fork. Drop-in replacement for Redis with enhanced performance and community governance.",
+    "image": "",
+    "tags": ["software", "database", "valkey", "cache", "redis-fork"],
+    "features": [],
+    "docker_images": {
+        "Valkey (latest)": "ghcr.io/grandpaacademy/yolks:valkey_latest"
+    },
+    "file_denylist": [],
+    "startup": "if [ ! -f /home/container/valkey.conf ]; then echo \"port ${SERVER_PORT:-6379}\" > /home/container/valkey.conf; echo \"bind 0.0.0.0\" >> /home/container/valkey.conf; echo \"daemonize no\" >> /home/container/valkey.conf; if [ ! -z \"${VALKEY_PASSWORD}\" ]; then echo \"requirepass ${VALKEY_PASSWORD}\" >> /home/container/valkey.conf; fi; fi; exec valkey-server /home/container/valkey.conf",
+    "config": {
+        "files": "{}",
+        "startup": "{\n    \"done\": [\n        \"change this text 1\",\n        \"change this text 2\"\n    ]\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# Valkey Install Script\napt update\napt install -y curl jq\nmkdir -p /mnt/server\necho -e \"install complete\"\nexit 0",
+            "container": "debian:bookworm-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Server Port",
+            "description": "The port Valkey listens on.",
+            "env_variable": "SERVER_PORT",
+            "default_value": "6379",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|min:1|max:65535",
+            "sort": 1
+        },
+        {
+            "name": "Valkey Password",
+            "description": "Password for Valkey authentication. Leave blank for no password.",
+            "env_variable": "VALKEY_PASSWORD",
+            "default_value": "",
+            "user_viewable": false,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 2
+        }
+    ]
+}

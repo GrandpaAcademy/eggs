@@ -1,0 +1,124 @@
+{
+    "_comment": "Hermes Agent Egg - Grandpa Academy",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": "https://raw.githubusercontent.com/grandpaacademy/eggs/main/ai/hermes-agent/egg-hermes-agent.json"
+    },
+    "exported_at": "2026-08-31T00:00:00+00:00",
+    "name": "Hermes Agent",
+    "author": "grandpaacademy",
+    "description": "Self-hosted AI agent by Nous Research. OpenAI-compatible gateway API (port 8642), web dashboard (port 9119), persistent memory, skills, and multi-profile support.",
+    "image": "",
+    "tags": ["ai", "agent", "hermes", "llm"],
+    "features": [],
+    "docker_images": {
+        "Hermes Agent (latest)": "ghcr.io/grandpaacademy/yolks:hermes_agent"
+    },
+    "file_denylist": [],
+    "startup": "bash /home/container/startup.sh",
+    "config": {
+        "files": "{}",
+        "startup": "{\n    \"done\": [\n        \"Hermes Agent starting on ports\",\n        \"Uvicorn running on\"\n    ]\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# Hermes Agent Install Script\napt update\napt install -y curl jq\nmkdir -p /mnt/server\ncd /mnt/server\necho \"[hermes] Install complete\"\nexit 0",
+            "container": "debian:bookworm-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "OpenRouter API Key",
+            "description": "OpenRouter API key for LLM access. Get one at https://openrouter.ai/keys",
+            "env_variable": "OPENROUTER_API_KEY",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 1
+        },
+        {
+            "name": "Anthropic API Key",
+            "description": "Anthropic API key for Claude models. Get one at https://console.anthropic.com/",
+            "env_variable": "ANTHROPIC_API_KEY",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 2
+        },
+        {
+            "name": "OpenAI API Key",
+            "description": "OpenAI API key for GPT models. Get one at https://platform.openai.com/api-keys",
+            "env_variable": "OPENAI_API_KEY",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 3
+        },
+        {
+            "name": "Enable Dashboard",
+            "description": "Enable web dashboard (1=enabled, 0=disabled). Dashboard runs on port 9119.",
+            "env_variable": "HERMES_DASHBOARD",
+            "default_value": "1",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|in:0,1",
+            "sort": 4
+        },
+        {
+            "name": "Dashboard Username",
+            "description": "Dashboard login username",
+            "env_variable": "HERMES_DASHBOARD_USERNAME",
+            "default_value": "admin",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|min:3",
+            "sort": 5
+        },
+        {
+            "name": "Dashboard Password",
+            "description": "Dashboard login password. Change this!",
+            "env_variable": "HERMES_DASHBOARD_PASSWORD",
+            "default_value": "changeme",
+            "user_viewable": false,
+            "user_editable": true,
+            "rules": "required|string|min:6",
+            "sort": 6
+        },
+        {
+            "name": "Dashboard Secret",
+            "description": "Dashboard session secret (auto-generated if blank)",
+            "env_variable": "HERMES_DASHBOARD_SECRET",
+            "default_value": "",
+            "user_viewable": false,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 7
+        },
+        {
+            "name": "Enable API Server",
+            "description": "Enable OpenAI-compatible API server on port 8642",
+            "env_variable": "API_SERVER_ENABLED",
+            "default_value": "true",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|in:true,false",
+            "sort": 8
+        },
+        {
+            "name": "API Server Key",
+            "description": "API server authentication key (auto-generated if blank). Clients must send as Bearer token.",
+            "env_variable": "API_SERVER_KEY",
+            "default_value": "",
+            "user_viewable": false,
+            "user_editable": true,
+            "rules": "nullable|string|min:8",
+            "sort": 9
+        }
+    ]
+}

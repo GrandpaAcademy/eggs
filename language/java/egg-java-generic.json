@@ -1,0 +1,126 @@
+{
+    "_comment": "Java Generic Egg - Grandpa Academy",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": "https://raw.githubusercontent.com/grandpaacademy/eggs/main/language/java/egg-java-generic.json"
+    },
+    "exported_at": "2026-08-31T00:00:00+00:00",
+    "name": "Java Generic",
+    "author": "grandpaacademy",
+    "description": "A generic Java egg for running Java/JAR applications. Supports git clone, maven/gradle builds, and custom JAR execution.",
+    "image": "",
+    "tags": ["language", "java", "jdk"],
+    "features": [],
+    "docker_images": {
+        "Java 24": "ghcr.io/grandpaacademy/yolks:java_24",
+        "Java 21": "ghcr.io/grandpaacademy/yolks:java_21",
+        "Java 17": "ghcr.io/grandpaacademy/yolks:java_17"
+    },
+    "file_denylist": [],
+    "startup": "if [[ -d .git ]] && [[ {{AUTO_UPDATE}} == \"1\" ]]; then git pull; fi; if [[ ! -z ${MAVEN_SETTINGS} ]]; then export MAVEN_OPTS=\"-s ${MAVEN_SETTINGS}\"; fi; if [ -f /home/container/pom.xml ] && [ ! -f /home/container/target/*.jar ]; then mvn clean package -DskipTests; fi; if [ -f /home/container/build.gradle ] && [ ! -f /home/container/build/libs/*.jar ]; then ./gradlew shadowJar || ./gradlew build; fi; if [ ! -z \"${JAR_FILE}\" ]; then exec java ${JAVA_ARGS} -jar /home/container/${JAR_FILE}; else echo \"No JAR_FILE specified!\"; exit 1; fi",
+    "config": {
+        "files": "{}",
+        "startup": "{\n    \"done\": [\n        \"change this text 1\",\n        \"change this text 2\"\n    ]\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# Java App Installation Script\napt update\napt install -y git curl jq file unzip maven\nmkdir -p /mnt/server\ncd /mnt/server\n\nif [ \"${USER_UPLOAD}\" == \"true\" ] || [ \"${USER_UPLOAD}\" == \"1\" ]; then\n    echo -e \"assuming user knows what they are doing have a good day.\"\n    exit 0\nfi\n\nif [[ ${GIT_ADDRESS} != *.git ]]; then\n    GIT_ADDRESS=${GIT_ADDRESS}.git\nfi\n\nif [ -z \"${USERNAME}\" ] && [ -z \"${ACCESS_TOKEN}\" ]; then\n    echo -e \"using anon api call\"\nelse\n    GIT_ADDRESS=\"https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e ${GIT_ADDRESS} | cut -d/ -f3-)\"\nfi\n\nif [ \"$(ls -A /mnt/server)\" ]; then\n    echo -e \"/mnt/server directory is not empty.\"\n    if [ -d .git ]; then\n        if [ -f .git/config ]; then\n            ORIGIN=$(git config --get remote.origin.url)\n        else\n            exit 10\n        fi\n    fi\n    if [ \"${ORIGIN}\" == \"${GIT_ADDRESS}\" ]; then\n        git pull\n    fi\nelse\n    if [ -z ${BRANCH} ]; then\n        git clone ${GIT_ADDRESS} .\n    else\n        git clone --single-branch --branch ${BRANCH} ${GIT_ADDRESS} .\n    fi\nfi\n\nif [ -f /mnt/server/pom.xml ]; then\n    echo \"Building with Maven...\"\n    mvn clean package -DskipTests\nelif [ -f /mnt/server/build.gradle ]; then\n    echo \"Building with Gradle...\"\n    chmod +x gradlew 2>/dev/null || true\n    if [ -f gradlew ]; then\n        ./gradlew shadowJar || ./gradlew build\n    fi\nfi\n\necho -e \"install complete\"\nexit 0",
+            "container": "eclipse-temurin:21-jdk-jammy",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Git Repo Address",
+            "description": "Git repo to clone. I.E. https://github.com/user/repo",
+            "env_variable": "GIT_ADDRESS",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 1
+        },
+        {
+            "name": "Git Branch",
+            "description": "What branch to pull from github. Default is blank to pull the repo default branch.",
+            "env_variable": "BRANCH",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 2
+        },
+        {
+            "name": "User Uploaded Files",
+            "description": "Skip all the install stuff if you are letting a user upload files. 0 = false (default) 1 = true",
+            "env_variable": "USER_UPLOAD",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "sort": 3
+        },
+        {
+            "name": "Auto Update",
+            "description": "Pull the latest files on startup when using a GitHub repo.",
+            "env_variable": "AUTO_UPDATE",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "sort": 4
+        },
+        {
+            "name": "JAR File",
+            "description": "The JAR file to run. Include path if not in root (e.g. target/app.jar or build/libs/app.jar)",
+            "env_variable": "JAR_FILE",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "sort": 5
+        },
+        {
+            "name": "Java Arguments",
+            "description": "Additional JVM arguments (e.g. -Xmx2G -Xms512M)",
+            "env_variable": "JAVA_ARGS",
+            "default_value": "-Xmx2G",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 6
+        },
+        {
+            "name": "Maven Settings",
+            "description": "Path to custom Maven settings.xml (optional)",
+            "env_variable": "MAVEN_SETTINGS",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 7
+        },
+        {
+            "name": "Git Username",
+            "description": "Username to auth with git.",
+            "env_variable": "USERNAME",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 8
+        },
+        {
+            "name": "Git Access Token",
+            "description": "Password to use with git. It's best practice to use a Personal Access Token.",
+            "env_variable": "ACCESS_TOKEN",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 9
+        }
+    ]
+}

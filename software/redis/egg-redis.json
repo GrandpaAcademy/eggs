@@ -1,0 +1,54 @@
+{
+    "_comment": "Redis Egg - Grandpa Academy",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": "https://raw.githubusercontent.com/grandpaacademy/eggs/main/software/redis/egg-redis.json"
+    },
+    "exported_at": "2026-08-31T00:00:00+00:00",
+    "name": "Redis",
+    "author": "grandpaacademy",
+    "description": "Redis in-memory data store. Place a custom redis.conf in /home/container/ for advanced configuration.",
+    "image": "",
+    "tags": ["software", "database", "redis", "cache"],
+    "features": [],
+    "docker_images": {
+        "Redis (latest)": "ghcr.io/grandpaacademy/yolks:redis_latest"
+    },
+    "file_denylist": [],
+    "startup": "if [ ! -f /home/container/redis.conf ]; then echo \"port ${SERVER_PORT:-6379}\" > /home/container/redis.conf; echo \"bind 0.0.0.0\" >> /home/container/redis.conf; echo \"daemonize no\" >> /home/container/redis.conf; if [ ! -z \"${REDIS_PASSWORD}\" ]; then echo \"requirepass ${REDIS_PASSWORD}\" >> /home/container/redis.conf; fi; fi; exec redis-server /home/container/redis.conf",
+    "config": {
+        "files": "{}",
+        "startup": "{\n    \"done\": [\n        \"change this text 1\",\n        \"change this text 2\"\n    ]\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# Redis Install Script\napt update\napt install -y redis-server curl jq\nmkdir -p /mnt/server\necho -e \"install complete\"\nexit 0",
+            "container": "debian:bookworm-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Server Port",
+            "description": "The port Redis listens on.",
+            "env_variable": "SERVER_PORT",
+            "default_value": "6379",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|min:1|max:65535",
+            "sort": 1
+        },
+        {
+            "name": "Redis Password",
+            "description": "Password for Redis authentication. Leave blank for no password.",
+            "env_variable": "REDIS_PASSWORD",
+            "default_value": "",
+            "user_viewable": false,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 2
+        }
+    ]
+}

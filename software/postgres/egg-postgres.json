@@ -1,0 +1,66 @@
+{
+    "_comment": "PostgreSQL Egg - Grandpa Academy",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": "https://raw.githubusercontent.com/grandpaacademy/eggs/main/software/postgres/egg-postgres.json"
+    },
+    "exported_at": "2026-08-31T00:00:00+00:00",
+    "name": "PostgreSQL",
+    "author": "grandpaacademy",
+    "description": "PostgreSQL database server. Place custom postgresql.conf and pg_hba.conf in /home/container/ for advanced configuration.",
+    "image": "",
+    "tags": ["software", "database", "postgres", "postgresql", "sql"],
+    "features": [],
+    "docker_images": {
+        "PostgreSQL 17": "ghcr.io/grandpaacademy/yolks:postgres_17",
+        "PostgreSQL 16": "ghcr.io/grandpaacademy/yolks:postgres_16",
+        "PostgreSQL 15": "ghcr.io/grandpaacademy/yolks:postgres_15"
+    },
+    "file_denylist": [],
+    "startup": "export PGDATA=/home/container/data; export PGUSER=${POSTGRES_USER:-postgres}; if [ ! -d /home/container/data ]; then mkdir -p /home/container/data; chown -R postgres:postgres /home/container/data; su - postgres -c \"initdb -D /home/container/data\"; echo \"host all all 0.0.0.0/0 md5\" >> /home/container/data/pg_hba.conf; echo \"listen_addresses='*'\" >> /home/container/data/postgresql.conf; echo \"port = ${SERVER_PORT:-5432}\" >> /home/container/data/postgresql.conf; su - postgres -c \"pg_ctl -D /home/container/data start -l /home/container/logfile\"; su - postgres -c \"psql -c \\\"ALTER USER postgres PASSWORD '${POSTGRES_PASSWORD:-changeme}';\\\"\"; su - postgres -c \"pg_ctl -D /home/container/data stop\"; fi; chown -R postgres:postgres /home/container/data; exec su - postgres -c \"pg_ctl -D /home/container/data -l /home/container/logfile start -w\"",
+    "config": {
+        "files": "{}",
+        "startup": "{\n    \"done\": [\n        \"change this text 1\",\n        \"change this text 2\"\n    ]\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# PostgreSQL Install Script\napt update\napt install -y postgresql postgresql-contrib curl jq\nmkdir -p /mnt/server\necho -e \"install complete\"\nexit 0",
+            "container": "debian:bookworm-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Server Port",
+            "description": "The port PostgreSQL listens on.",
+            "env_variable": "SERVER_PORT",
+            "default_value": "5432",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|min:1|max:65535",
+            "sort": 1
+        },
+        {
+            "name": "Database User",
+            "description": "The PostgreSQL superuser name.",
+            "env_variable": "POSTGRES_USER",
+            "default_value": "postgres",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "sort": 2
+        },
+        {
+            "name": "Database Password",
+            "description": "The PostgreSQL superuser password.",
+            "env_variable": "POSTGRES_PASSWORD",
+            "default_value": "changeme",
+            "user_viewable": false,
+            "user_editable": true,
+            "rules": "required|string|min:6",
+            "sort": 3
+        }
+    ]
+}

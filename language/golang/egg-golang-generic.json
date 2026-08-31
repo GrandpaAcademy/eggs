@@ -1,0 +1,136 @@
+{
+    "_comment": "Golang Generic Egg - Grandpa Academy",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": "https://raw.githubusercontent.com/grandpaacademy/eggs/main/language/golang/egg-golang-generic.json"
+    },
+    "exported_at": "2026-08-31T00:00:00+00:00",
+    "name": "Golang Generic",
+    "author": "grandpaacademy",
+    "description": "A generic Go egg for building and running Go applications. Supports git clone, go mod tidy, and custom build/run commands.",
+    "image": "",
+    "tags": ["language", "golang", "go"],
+    "features": [],
+    "docker_images": {
+        "Golang 1.24": "ghcr.io/grandpaacademy/yolks:golang_1.24",
+        "Golang 1.23": "ghcr.io/grandpaacademy/yolks:golang_1.23",
+        "Golang 1.22": "ghcr.io/grandpaacademy/yolks:golang_1.22"
+    },
+    "file_denylist": [],
+    "startup": "if [[ -d .git ]] && [[ {{AUTO_UPDATE}} == \"1\" ]]; then git pull; fi; if [[ ! -f /home/container/{{MAIN_FILE}} ]]; then echo \"Main file not found!\"; exit 1; fi; if [ -f go.mod ]; then /usr/local/go/bin/go mod tidy; fi; if [ \"${BUILD_ONLY}\" == \"1\" ]; then /usr/local/go/bin/go build -o /home/container/server ${GO_BUILD_ARGS} .; else /usr/local/go/bin/go run ${GO_RUN_ARGS} /home/container/{{MAIN_FILE}}; fi",
+    "config": {
+        "files": "{}",
+        "startup": "{\n    \"done\": [\n        \"change this text 1\",\n        \"change this text 2\"\n    ]\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# Golang App Installation Script\napt update\napt install -y git curl jq file unzip\nmkdir -p /mnt/server\ncd /mnt/server\n\nif [ \"${USER_UPLOAD}\" == \"true\" ] || [ \"${USER_UPLOAD}\" == \"1\" ]; then\n    echo -e \"assuming user knows what they are doing have a good day.\"\n    exit 0\nfi\n\nif [[ ${GIT_ADDRESS} != *.git ]]; then\n    GIT_ADDRESS=${GIT_ADDRESS}.git\nfi\n\nif [ -z \"${USERNAME}\" ] && [ -z \"${ACCESS_TOKEN}\" ]; then\n    echo -e \"using anon api call\"\nelse\n    GIT_ADDRESS=\"https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e ${GIT_ADDRESS} | cut -d/ -f3-)\"\nfi\n\nif [ \"$(ls -A /mnt/server)\" ]; then\n    echo -e \"/mnt/server directory is not empty.\"\n    if [ -d .git ]; then\n        echo -e \".git directory exists\"\n        if [ -f .git/config ]; then\n            ORIGIN=$(git config --get remote.origin.url)\n        else\n            echo -e \"files found with no git config\"\n            exit 10\n        fi\n    fi\n    if [ \"${ORIGIN}\" == \"${GIT_ADDRESS}\" ]; then\n        echo \"pulling latest from github\"\n        git pull\n    fi\nelse\n    echo -e \"/mnt/server is empty.\\ncloning files into repo\"\n    if [ -z ${BRANCH} ]; then\n        git clone ${GIT_ADDRESS} .\n    else\n        git clone --single-branch --branch ${BRANCH} ${GIT_ADDRESS} .\n    fi\nfi\n\nif [ -f /mnt/server/go.mod ]; then\n    echo \"Installing go modules...\"\n    /usr/local/go/bin/go mod download\nfi\n\necho -e \"install complete\"\nexit 0",
+            "container": "golang:1.24-bookworm",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Git Repo Address",
+            "description": "Git repo to clone. I.E. https://github.com/user/repo",
+            "env_variable": "GIT_ADDRESS",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 1
+        },
+        {
+            "name": "Git Branch",
+            "description": "What branch to pull from github. Default is blank to pull the repo default branch.",
+            "env_variable": "BRANCH",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 2
+        },
+        {
+            "name": "User Uploaded Files",
+            "description": "Skip all the install stuff if you are letting a user upload files. 0 = false (default) 1 = true",
+            "env_variable": "USER_UPLOAD",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "sort": 3
+        },
+        {
+            "name": "Auto Update",
+            "description": "Pull the latest files on startup when using a GitHub repo.",
+            "env_variable": "AUTO_UPDATE",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
+            "sort": 4
+        },
+        {
+            "name": "Main file",
+            "description": "The main Go file to run (e.g. main.go).",
+            "env_variable": "MAIN_FILE",
+            "default_value": "main.go",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "sort": 5
+        },
+        {
+            "name": "Build Only Mode",
+            "description": "Build the binary and run it (1) or use 'go run' (0). Build mode is recommended for production.",
+            "env_variable": "BUILD_ONLY",
+            "default_value": "1",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|in:0,1",
+            "sort": 6
+        },
+        {
+            "name": "Go Build Args",
+            "description": "Additional arguments for 'go build' (e.g. -ldflags '-s -w')",
+            "env_variable": "GO_BUILD_ARGS",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 7
+        },
+        {
+            "name": "Go Run Args",
+            "description": "Additional arguments for 'go run'",
+            "env_variable": "GO_RUN_ARGS",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 8
+        },
+        {
+            "name": "Git Username",
+            "description": "Username to auth with git.",
+            "env_variable": "USERNAME",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 9
+        },
+        {
+            "name": "Git Access Token",
+            "description": "Password to use with git. It's best practice to use a Personal Access Token.",
+            "env_variable": "ACCESS_TOKEN",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "sort": 10
+        }
+    ]
+}
