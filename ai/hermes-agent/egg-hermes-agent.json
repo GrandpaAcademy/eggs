@@ -82,10 +82,10 @@
         },
         {
             "name": "Dashboard Password",
-            "description": "Dashboard login password. Change this!",
+            "description": "Dashboard login password. Generated per-instance by the panel at creation; change it here any time.",
             "env_variable": "HERMES_DASHBOARD_PASSWORD",
             "default_value": "changeme",
-            "user_viewable": false,
+            "user_viewable": true,
             "user_editable": true,
             "rules": "required|string|min:6",
             "sort": 6
